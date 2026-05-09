@@ -1,7 +1,7 @@
 {
   "name": "wagmi-dapp",
   "version": "1.0.0",
-  "description": "Personal exploration of wagmi v2 — React Hooks for Ethereum",
+  "description": "Personal exploration of wagmi v2 - React Hooks for Ethereum",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
