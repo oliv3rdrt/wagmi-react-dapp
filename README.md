@@ -27,6 +27,8 @@ cp .env.example .env
 npm run dev
 ```
 
+For the RPC URLs, get an Infura key from [MetaMask Developer](https://developer.metamask.io) and use the `https://<chain>.infura.io/v3/<key>` format. Public RPCs work for casual testing but rate-limit aggressively.
+
 Open http://localhost:5173, connect a wallet, transfer some testnet USDC.
 
 ## What's in here
