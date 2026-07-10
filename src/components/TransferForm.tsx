@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useSimulateContract } from "wagmi";
 import { erc20Abi, parseUnits, isAddress } from "viem";
 import { USDC_ADDRESS, USDC_DECIMALS } from "../tokens.js";
@@ -11,6 +11,9 @@ export function TransferForm() {
 
   const toAddr = isAddress(to) ? (to as `0x${string}`) : undefined;
   const parsedAmount = amount ? parseUnits(amount, USDC_DECIMALS) : undefined;
+
+  // Only flag an invalid recipient once the user has typed something.
+  const invalidAddress = to.length > 0 && !toAddr;
 
   const { data: simulateData, error: simulateError } = useSimulateContract({
     address: USDC_ADDRESS,
@@ -26,6 +29,14 @@ export function TransferForm() {
     hash: txHash,
   });
 
+  // Clear the inputs once a transfer has been confirmed on-chain.
+  useEffect(() => {
+    if (isSuccess) {
+      setTo("");
+      setAmount("");
+    }
+  }, [isSuccess]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (simulateData?.request) {
@@ -38,17 +49,34 @@ export function TransferForm() {
   return (
     <form onSubmit={handleSubmit}>
       <h2>Transfer USDC</h2>
-      <input
-        placeholder="Recipient address (0x...)"
-        value={to}
-        onChange={(e) => setTo(e.target.value)}
-      />
-      <input
-        placeholder="Amount (USDC)"
-        type="number"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-      />
+      <p>
+        <label htmlFor="transfer-to">Recipient address</label>
+        <br />
+        <input
+          id="transfer-to"
+          placeholder="0x..."
+          value={to}
+          onChange={(e) => setTo(e.target.value)}
+          aria-invalid={invalidAddress}
+        />
+      </p>
+      {invalidAddress && (
+        <p style={{ color: "red" }}>Enter a valid Ethereum address.</p>
+      )}
+      <p>
+        <label htmlFor="transfer-amount">Amount (USDC)</label>
+        <br />
+        <input
+          id="transfer-amount"
+          placeholder="0.00"
+          type="number"
+          min="0"
+          step="any"
+          inputMode="decimal"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+        />
+      </p>
       {simulateError && <p style={{ color: "red" }}>Error: {simulateError.message}</p>}
       <button type="submit" disabled={!simulateData?.request || isPending || isConfirming}>
         {isPending ? "Awaiting signature…" : isConfirming ? "Confirming…" : "Transfer"}
