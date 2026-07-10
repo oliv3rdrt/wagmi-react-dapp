@@ -1,6 +1,7 @@
 import { useAccount, useBalance, useBlockNumber, useDisconnect } from "wagmi";
 import { ConnectWallet } from "./ConnectWallet.js";
 import { TokenBalance } from "./TokenBalance.js";
+import { explorerUrl } from "../explorer.js";
 
 export function AccountInfo() {
   const { address, chain, isConnected } = useAccount();
@@ -10,9 +11,18 @@ export function AccountInfo() {
 
   if (!isConnected) return <ConnectWallet />;
 
+  const addressLink = address && explorerUrl(chain, "address", address);
+
   return (
     <div>
-      <p><strong>Address:</strong> {address}</p>
+      <p>
+        <strong>Address:</strong>{" "}
+        {addressLink ? (
+          <a href={addressLink} target="_blank" rel="noreferrer">{address}</a>
+        ) : (
+          address
+        )}
+      </p>
       <p><strong>Chain:</strong> {chain?.name}</p>
       <p>
         <strong>Balance:</strong>{" "}

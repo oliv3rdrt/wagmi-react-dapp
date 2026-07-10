@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useSimulateContract } from "wagmi";
 import { erc20Abi, parseUnits, isAddress } from "viem";
 import { USDC_ADDRESS, USDC_DECIMALS } from "../tokens.js";
+import { explorerUrl } from "../explorer.js";
 
 export function TransferForm() {
-  const { isConnected } = useAccount();
+  const { isConnected, chain } = useAccount();
   const [to, setTo] = useState("");
   const [amount, setAmount] = useState("");
 
@@ -52,7 +53,22 @@ export function TransferForm() {
       <button type="submit" disabled={!simulateData?.request || isPending || isConfirming}>
         {isPending ? "Awaiting signature…" : isConfirming ? "Confirming…" : "Transfer"}
       </button>
-      {isSuccess && <p style={{ color: "green" }}>Transfer confirmed! Tx: {txHash}</p>}
+      {isSuccess && txHash && (
+        <p style={{ color: "green" }}>
+          Transfer confirmed!{" "}
+          {explorerUrl(chain, "tx", txHash) ? (
+            <a
+              href={explorerUrl(chain, "tx", txHash)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              View transaction
+            </a>
+          ) : (
+            `Tx: ${txHash}`
+          )}
+        </p>
+      )}
     </form>
   );
 }
