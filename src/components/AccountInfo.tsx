@@ -1,4 +1,5 @@
 import { useAccount, useBalance, useBlockNumber, useDisconnect } from "wagmi";
+import { ConnectWallet } from "./ConnectWallet.js";
 
 export function AccountInfo() {
   const { address, chain, isConnected } = useAccount();
@@ -6,7 +7,7 @@ export function AccountInfo() {
   const { data: balance } = useBalance({ address });
   const { data: blockNumber } = useBlockNumber({ watch: true });
 
-  if (!isConnected) return <p>No wallet connected.</p>;
+  if (!isConnected) return <ConnectWallet />;
 
   return (
     <div>
