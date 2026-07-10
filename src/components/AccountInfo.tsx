@@ -1,5 +1,6 @@
 import { useAccount, useBalance, useBlockNumber, useDisconnect } from "wagmi";
 import { ConnectWallet } from "./ConnectWallet.js";
+import { TokenBalance } from "./TokenBalance.js";
 
 export function AccountInfo() {
   const { address, chain, isConnected } = useAccount();
@@ -17,6 +18,7 @@ export function AccountInfo() {
         <strong>Balance:</strong>{" "}
         {balance ? `${Number(balance.formatted).toFixed(4)} ${balance.symbol}` : "Loading…"}
       </p>
+      <TokenBalance />
       <p><strong>Block:</strong> {blockNumber?.toString()}</p>
       <button onClick={() => disconnect()}>Disconnect</button>
     </div>

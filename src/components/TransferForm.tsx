@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useSimulateContract } from "wagmi";
 import { erc20Abi, parseUnits, isAddress } from "viem";
-
-const TOKEN_ADDRESS = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" as const; // USDC
+import { USDC_ADDRESS, USDC_DECIMALS } from "../tokens.js";
 
 export function TransferForm() {
   const { isConnected } = useAccount();
@@ -10,10 +9,10 @@ export function TransferForm() {
   const [amount, setAmount] = useState("");
 
   const toAddr = isAddress(to) ? (to as `0x${string}`) : undefined;
-  const parsedAmount = amount ? parseUnits(amount, 6) : undefined; // USDC = 6 decimals
+  const parsedAmount = amount ? parseUnits(amount, USDC_DECIMALS) : undefined;
 
   const { data: simulateData, error: simulateError } = useSimulateContract({
-    address: TOKEN_ADDRESS,
+    address: USDC_ADDRESS,
     abi: erc20Abi,
     functionName: "transfer",
     args: toAddr && parsedAmount ? [toAddr, parsedAmount] : undefined,
